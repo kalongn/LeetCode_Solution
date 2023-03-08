@@ -3,10 +3,10 @@ class Solution {
         int left = 1;
         int right = 1000000000;
 
-        while (left <= right) {
+        while (left < right) {
             int mid = left + (right - left) / 2;
             if (canEatInTime(piles, mid, h))
-                right = mid - 1;
+                right = mid;
             else
                 left = mid + 1;
         }
