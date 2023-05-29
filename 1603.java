@@ -1,11 +1,9 @@
 class ParkingSystem {
 
-    private int[] system = new int[3];
+    private int[] system;
 
     public ParkingSystem(int big, int medium, int small) {
-        this.system[0] = big;
-        this.system[1] = medium;
-        this.system[2] = small;
+        this.system = new int[] { big, medium, small };
     }
 
     public boolean addCar(int carType) {
