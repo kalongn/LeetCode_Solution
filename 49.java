@@ -17,5 +17,6 @@ class Solution {
             map.put(charCount, value);
         }
         return map.entrySet().stream().map(x -> x.getValue()).collect(Collectors.toList());
+        // return new ArrayList<>(map.values());
     }
 }
