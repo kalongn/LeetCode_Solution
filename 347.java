@@ -1,27 +1,24 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 class Solution {
     public int[] topKFrequent(int[] nums, int k) {
-        if (k == nums.length) {
+        if (nums.length <= k) {
             return nums;
         }
-        Map<Integer, Integer> count = new HashMap<>();
-        for (int n : nums) {
-            count.put(n, count.getOrDefault(n, 0) + 1);
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : nums) {
+            map.put(num, map.getOrDefault(num, 0) + 1);
         }
-        Queue<Integer> frequency = new PriorityQueue<>((n1, n2) -> count.get(n1) - count.get(n2));
-        for (int n : count.keySet()) {
-            frequency.add(n);
-            if (frequency.size() > k) {
-                frequency.poll();
+        Queue<Integer> heap = new PriorityQueue<>((num1, num2) -> map.get(num1) - map.get(num2));
+        for (int i : map.keySet()) {
+            heap.add(i);
+            if (heap.size() > k) {
+                heap.poll();
             }
         }
         int[] result = new int[k];
-        for (int i = k - 1; i >= 0; i--) {
-            result[i] = frequency.poll();
+        for (int i = 0; i < k; i++) {
+            result[i] = heap.poll();
         }
         return result;
     }
