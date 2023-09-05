@@ -1,7 +1,7 @@
 class Solution {
     public Node copyRandomList(Node head) {
         Node cursor = head, next;
-        while( cursor != null ) {
+        while (cursor != null) {
             next = cursor.next;
             Node copy = new Node(cursor.val);
             cursor.next = copy;
@@ -11,7 +11,7 @@ class Solution {
 
         cursor = head;
         while (cursor != null) {
-            if(cursor.random != null) {
+            if (cursor.random != null) {
                 cursor.next.random = cursor.random.next;
             }
             cursor = cursor.next.next;
@@ -20,7 +20,7 @@ class Solution {
         cursor = head;
         Node dummyHead = new Node(0);
         Node copy, copyCursor = dummyHead;
-        while(cursor != null) {
+        while (cursor != null) {
             next = cursor.next.next;
 
             copy = cursor.next;
