@@ -1,32 +1,33 @@
-/*
-https://leetcode.com/problems/median-of-two-sorted-arrays/solutions/2496/concise-java-solution-based-on-binary-search/?orderBy=most_votes
- */
-
 class Solution {
-    public double findMedianSortedArrays(int[] A, int[] B) {
-        int m = A.length, n = B.length;
-        int l = (m + n + 1) / 2;
-        int r = (m + n + 2) / 2;
-        return (getkth(A, 0, B, 0, l) + getkth(A, 0, B, 0, r)) / 2.0;
-    }
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        if (nums1.length > nums2.length) {
+            return findMedianSortedArrays(nums2, nums1);
+        }
 
-    public double getkth(int[] A, int aStart, int[] B, int bStart, int k) {
-        if (aStart > A.length - 1)
-            return B[bStart + k - 1];
-        if (bStart > B.length - 1)
-            return A[aStart + k - 1];
-        if (k == 1)
-            return Math.min(A[aStart], B[bStart]);
+        int m = nums1.length, n = nums2.length;
+        int left = 0, right = m;
 
-        int aMid = Integer.MAX_VALUE, bMid = Integer.MAX_VALUE;
-        if (aStart + k / 2 - 1 < A.length)
-            aMid = A[aStart + k / 2 - 1];
-        if (bStart + k / 2 - 1 < B.length)
-            bMid = B[bStart + k / 2 - 1];
+        while (left <= right) {
+            int partitionA = (left + right) / 2;
+            int partitionB = (m + n + 1) / 2 - partitionA;
 
-        if (aMid < bMid)
-            return getkth(A, aStart + k / 2, B, bStart, k - k / 2);// Check: aRight + bLeft
-        else
-            return getkth(A, aStart, B, bStart + k / 2, k - k / 2);// Check: bRight + aLeft
+            int maxLeftA = (partitionA == 0) ? Integer.MIN_VALUE : nums1[partitionA - 1];
+            int minRightA = (partitionA == m) ? Integer.MAX_VALUE : nums1[partitionA];
+            int maxLeftB = (partitionB == 0) ? Integer.MIN_VALUE : nums2[partitionB - 1];
+            int minRightB = (partitionB == n) ? Integer.MAX_VALUE : nums2[partitionB];
+
+            if (maxLeftA <= minRightB && maxLeftB <= minRightA) {
+                if ((m + n) % 2 == 0) {
+                    return (Math.max(maxLeftA, maxLeftB) + Math.min(minRightA, minRightB)) / 2.0;
+                } else {
+                    return Math.max(maxLeftA, maxLeftB);
+                }
+            } else if (maxLeftA > minRightB) {
+                right = partitionA - 1;
+            } else {
+                left = partitionA + 1;
+            }
+        }
+        return 0.0;
     }
 }
