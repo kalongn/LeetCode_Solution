@@ -6,4 +6,9 @@ public class ListNode {
         val = x;
         next = null;
     }
+
+    ListNode(int x, ListNode link) {
+        val = x;
+        next = link;
+    }
 }
