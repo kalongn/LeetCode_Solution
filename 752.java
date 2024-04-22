@@ -2,7 +2,7 @@ import java.util.*;
 
 class Solution {
     public int openLock(String[] deadends, String target) {
-        if (target == "0000") {
+        if (target.equals("0000")) {
             return 0;
         }
         Set<String> visited = new HashSet<>(Arrays.asList(deadends));
