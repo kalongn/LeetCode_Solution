@@ -1,4 +1,4 @@
-import java.util.PriorityQueue;
+import java.util.*;
 
 class KthLargest {
     private int k;
@@ -9,9 +9,9 @@ class KthLargest {
         heap = new PriorityQueue<Integer>();
         for (int i : nums) {
             heap.offer(i);
-        }
-        while (heap.size() > k) {
-            heap.poll();
+            if (heap.size() > k) {
+                heap.poll();
+            }
         }
     }
 
@@ -23,3 +23,9 @@ class KthLargest {
         return heap.peek();
     }
 }
+
+/**
+ * Your KthLargest object will be instantiated and called as such:
+ * KthLargest obj = new KthLargest(k, nums);
+ * int param_1 = obj.add(val);
+ */
