@@ -1,42 +1,34 @@
+import java.util.*;
+
 class Solution {
 
-    Integer[][] cache;
-
     public int stoneGameII(int[] piles) {
-        cache = new Integer[piles.length][piles.length * 2];
-        int totalStones = 0;
-        for (int stones : piles) {
-            totalStones += stones;
+        int[] suffixSum = Arrays.copyOf(piles, piles.length);
+        for (int i = suffixSum.length - 2; i >= 0; i--) {
+            suffixSum[i] += suffixSum[i + 1];
         }
-        // (Alice's Stone + Bob's Stone) = totalStones
-        // (Alice's Stone - Bob's Stone) = Alice's score
 
-        // 2 * Alice's Stone = totalStones + Alice's score
-        // Alice's Stone = (totalStones + Alice's score) / 2
-        return (totalStones + getAliceScore(piles, 0, 1)) / 2;
+        return maxStones(suffixSum, 1, 0, new int[piles.length][piles.length]);
     }
 
-    private int getAliceScore(int[] piles, int index, int M) {
-        if (index == piles.length) {
-            return 0;
-        }
-        if (cache[index][M] != null) {
-            return cache[index][M];
-        }
-        int maxScore = Integer.MIN_VALUE;
-        int stone = 0;
+    private int maxStones(
+            int[] suffixSum,
+            int maxTillNow,
+            int currIndex,
+            int[][] memo) {
 
-        for (int x = 0; x < 2 * M; x++) {
-            int i = index + x;
-            if (i >= piles.length) {
-                continue;
-            }
-            stone += piles[i];
-            // calculate score
-            int score = stone - getAliceScore(piles, i + 1, Math.max(x + 1, M));
-            // update score
-            maxScore = Math.max(maxScore, score);
+        if (currIndex + 2 * maxTillNow >= suffixSum.length) {
+            return suffixSum[currIndex];
         }
-        return cache[index][M] = maxScore;
+        if (memo[currIndex][maxTillNow] > 0) {
+            return memo[currIndex][maxTillNow];
+        }
+        int res = Integer.MAX_VALUE;
+
+        for (int i = 1; i <= 2 * maxTillNow; i++) {
+            res = Math.min(res, maxStones(suffixSum, Math.max(i, maxTillNow), currIndex + i, memo));
+        }
+        memo[currIndex][maxTillNow] = suffixSum[currIndex] - res;
+        return memo[currIndex][maxTillNow];
     }
 }
