@@ -1,46 +1,60 @@
 class Solution {
-    public int strangePrinter(String s) {
-        // Memoizatiion ----- Approach - 1
-        // Integer[][] dp = new Integer[s.length()][s.length()];
-        // return solveMemo(s, 0, s.length() - 1, dp);
 
-        // Tabulation ------ Approach - 2
-        int[][] dp = new int[s.length()][s.length()]; // dp[i][j] defines minimum turns for substring i to j
-        for (int i = dp.length - 1; i >= 0; i--) {
-            for (int j = 0; j < dp.length; j++) {
-                if (i > j) { // invalid substring
-                    continue;
-                } else if (i == j) {// single character || base condition
-                    dp[i][j] = 1;
-                } else {
-                    int min = Integer.MAX_VALUE;
-                    for (int k = i; k < j; k++) { // For finding split which results in minimum turns;
-                        min = Math.min(min, dp[i][k] + dp[k + 1][j]);
+    public int strangePrinter(String s) {
+        // Preprocess the string to remove consecutive duplicate characters
+        s = removeDuplicates(s);
+
+        int n = s.length();
+
+        // dp[i][j] represents the minimum number of turns to print s[i] to s[j]
+        int[][] minTurns = new int[n][n];
+
+        // Initialize base case
+        for (int i = 0; i < n; i++) {
+            // It takes 1 turn to print a single character
+            minTurns[i][i] = 1;
+        }
+
+        // Fill the dp table
+        for (int length = 2; length <= n; length++) {
+            for (int start = 0; start + length - 1 < n; start++) {
+                int end = start + length - 1;
+
+                // Initialize with worst case: print each character separately
+                minTurns[start][end] = length;
+
+                // Try all possible splits and find the minimum
+                for (int split = 0; split < length - 1; split++) {
+                    int totalTurns = minTurns[start][start + split] +
+                            minTurns[start + split + 1][end];
+
+                    // If the characters at the split and end match, we can save one turn
+                    if (s.charAt(start + split) == s.charAt(end)) {
+                        totalTurns--;
                     }
-                    if (s.charAt(i) == s.charAt(j)) {
-                        min--;
-                    }
-                    dp[i][j] = min;
+
+                    minTurns[start][end] = Math.min(
+                            minTurns[start][end],
+                            totalTurns);
                 }
             }
         }
-        return dp[0][s.length() - 1];
-        // TC -> O(n ^ 3)
+
+        // Return the minimum turns needed to print the entire string
+        return minTurns[0][n - 1];
     }
 
-    // Memoization
-    public int solveMemo(String s, int i, int j, Integer[][] dp) {
-        if (i == j) {
-            return 1;
+    private String removeDuplicates(String s) {
+        StringBuilder uniqueChars = new StringBuilder();
+        int i = 0;
+        while (i < s.length()) {
+            char currentChar = s.charAt(i);
+            uniqueChars.append(currentChar);
+            // Skip all consecutive occurrences of the current character
+            while (i < s.length() && s.charAt(i) == currentChar) {
+                i++;
+            }
         }
-        if (dp[i][j] != null) {
-            return dp[i][j];
-        }
-        int ans = Integer.MAX_VALUE;
-        for (int k = i; k < j; k++) {
-            ans = Math.min(ans, solveMemo(s, i, k, dp) + solveMemo(s, k + 1, j, dp));
-        }
-
-        return dp[i][j] = s.charAt(i) == s.charAt(j) ? ans - 1 : ans;
+        return uniqueChars.toString();
     }
 }
