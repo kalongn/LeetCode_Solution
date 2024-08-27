@@ -1,28 +1,38 @@
+import java.util.*;
+import javafx.util.Pair;
+
 class Solution {
     public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
+        Map<Integer, List<Pair<Integer, Double>>> graph = new HashMap<>();
+        for (int i = 0; i < edges.length; i++) {
+            int u = edges[i][0], v = edges[i][1];
+            double pathProb = succProb[i];
+            graph.computeIfAbsent(u, k -> new ArrayList<>()).add(new Pair<>(v, pathProb));
+            graph.computeIfAbsent(v, k -> new ArrayList<>()).add(new Pair<>(u, pathProb));
+        }
+
         double[] maxProb = new double[n];
         maxProb[start] = 1.0;
 
-        for (int i = 0; i < n - 1; i++) {
-            boolean hasUpdate = false;
-            for (int j = 0; j < edges.length; j++) {
-                int u = edges[j][0];
-                int v = edges[j][1];
-                double pathProb = succProb[j];
-                if (maxProb[u] * pathProb > maxProb[v]) {
-                    maxProb[v] = maxProb[u] * pathProb;
-                    hasUpdate = true;
-                }
-                if (maxProb[v] * pathProb > maxProb[u]) {
-                    maxProb[u] = maxProb[v] * pathProb;
-                    hasUpdate = true;
-                }
+        Queue<Pair<Double, Integer>> pq = new PriorityQueue<>((a, b) -> -Double.compare(a.getKey(), b.getKey()));
+        pq.add(new Pair<>(1.0, start));
+        while (!pq.isEmpty()) {
+            Pair<Double, Integer> cur = pq.poll();
+            double curProb = cur.getKey();
+            int curNode = cur.getValue();
+            if (curNode == end) {
+                return curProb;
             }
-            if (!hasUpdate) {
-                break;
+            for (Pair<Integer, Double> nxt : graph.getOrDefault(curNode, new ArrayList<>())) {
+                int nxtNode = nxt.getKey();
+                double pathProb = nxt.getValue();
+                if (curProb * pathProb > maxProb[nxtNode]) {
+                    maxProb[nxtNode] = curProb * pathProb;
+                    pq.add(new Pair<>(maxProb[nxtNode], nxtNode));
+                }
             }
         }
 
-        return maxProb[end];
+        return 0.0;
     }
 }
