@@ -1,38 +1,26 @@
 import java.util.*;
-import javafx.util.Pair;
 
 class Solution {
     public double maxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
-        Map<Integer, List<Pair<Integer, Double>>> graph = new HashMap<>();
-        for (int i = 0; i < edges.length; i++) {
-            int u = edges[i][0], v = edges[i][1];
-            double pathProb = succProb[i];
-            graph.computeIfAbsent(u, k -> new ArrayList<>()).add(new Pair<>(v, pathProb));
-            graph.computeIfAbsent(v, k -> new ArrayList<>()).add(new Pair<>(u, pathProb));
+        Map<Integer, List<int[]>> g = new HashMap<>();
+        for (int i = 0; i < edges.length; ++i) {
+            int a = edges[i][0], b = edges[i][1];
+            g.computeIfAbsent(a, l -> new ArrayList<>()).add(new int[] { b, i });
+            g.computeIfAbsent(b, l -> new ArrayList<>()).add(new int[] { a, i });
         }
-
         double[] maxProb = new double[n];
         maxProb[start] = 1.0;
-
-        Queue<Pair<Double, Integer>> pq = new PriorityQueue<>((a, b) -> -Double.compare(a.getKey(), b.getKey()));
-        pq.add(new Pair<>(1.0, start));
-        while (!pq.isEmpty()) {
-            Pair<Double, Integer> cur = pq.poll();
-            double curProb = cur.getKey();
-            int curNode = cur.getValue();
-            if (curNode == end) {
-                return curProb;
-            }
-            for (Pair<Integer, Double> nxt : graph.getOrDefault(curNode, new ArrayList<>())) {
-                int nxtNode = nxt.getKey();
-                double pathProb = nxt.getValue();
-                if (curProb * pathProb > maxProb[nxtNode]) {
-                    maxProb[nxtNode] = curProb * pathProb;
-                    pq.add(new Pair<>(maxProb[nxtNode], nxtNode));
+        Queue<Integer> queue = new LinkedList<>(Arrays.asList(start));
+        while (!queue.isEmpty()) {
+            int cur = queue.poll();
+            for (int[] a : g.getOrDefault(cur, Collections.emptyList())) {
+                int neighbor = a[0], index = a[1];
+                if (maxProb[cur] * succProb[index] > maxProb[neighbor]) {
+                    maxProb[neighbor] = maxProb[cur] * succProb[index];
+                    queue.offer(neighbor);
                 }
             }
         }
-
-        return 0.0;
+        return maxProb[end];
     }
 }
