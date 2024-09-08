@@ -7,24 +7,29 @@ class Solution {
             length++;
         }
 
-        int width = length / k, rem = length % k;
-
-        ListNode[] result = new ListNode[k];
+        int div = length / k, mod = length % k;
+        ListNode prev = null;
         current = head;
+        ListNode[] result = new ListNode[k];
         for (int i = 0; i < k; i++) {
-            ListNode currentHead = current;
-            for (int j = 0; j < width + (i < rem ? 1 : 0) - 1; j++) {
-                if (current != null) {
-                    current = current.next;
-                }
+            int amtToAppend = div;
+            ListNode newSegment = current;
+            if (mod > 0) {
+                amtToAppend++;
+                mod--;
             }
-            if (current != null) {
-                ListNode previous = current;
+            for (int j = 0; j < amtToAppend; j++) {
+                prev = current;
                 current = current.next;
-                previous.next = null;
             }
-            result[i] = currentHead;
+
+            if (prev != null) {
+                prev.next = null;
+            }
+
+            result[i] = newSegment;
         }
+
         return result;
     }
 }
