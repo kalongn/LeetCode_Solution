@@ -1,22 +1,34 @@
 import java.util.*;
 
 class Solution {
+    Integer[] memo;
+    HashSet<String> dictionarySet;
+
     public int minExtraChar(String s, String[] dictionary) {
-        int maxVal = s.length() + 1;
-        int[] dp = new int[s.length() + 1];
-        Arrays.fill(dp, maxVal);
-        dp[0] = 0;
+        int n = s.length();
+        memo = new Integer[n];
+        dictionarySet = new HashSet<>(Arrays.asList(dictionary));
+        return dp(0, n, s);
+    }
 
-        Set<String> dictionarySet = new HashSet<>(Arrays.asList(dictionary));
+    private int dp(int start, int n, String s) {
+        if (start == n) {
+            return 0;
+        }
+        if (memo[start] != null) {
+            return memo[start];
+        }
+        // if left over
+        int ans = dp(start + 1, n, s) + 1;
 
-        for (int i = 1; i <= s.length(); ++i) {
-            dp[i] = dp[i - 1] + 1;
-            for (int l = 1; l <= i; ++l) {
-                if (dictionarySet.contains(s.substring(i - l, i))) {
-                    dp[i] = Math.min(dp[i], dp[i - l]);
-                }
+        // if found valid dictionary
+        for (int end = start; end < n; end++) {
+            var curr = s.substring(start, end + 1);
+            if (dictionarySet.contains(curr)) {
+                ans = Math.min(ans, dp(end + 1, n, s));
             }
         }
-        return dp[s.length()];
+
+        return memo[start] = ans;
     }
 }
