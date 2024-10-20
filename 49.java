@@ -2,20 +2,20 @@ import java.util.*;
 
 class Solution {
     public List<List<String>> groupAnagrams(String[] strs) {
-        if (strs == null || strs.length == 0) {
-            return Collections.emptyList();
-        }
-        Map<String, List<String>> map = new HashMap<>();
-        for (String s : strs) {
-            char[] frequencyArr = new char[26];
-            for (int i = 0; i < s.length(); i++) {
-                frequencyArr[s.charAt(i) - 'a']++;
+        Map<Map<Character, Integer>, List<String>> resultMap = new HashMap<>();
+        for (String i : strs) {
+            Map<Character, Integer> map = new HashMap<>();
+            for (char c : i.toCharArray()) {
+                map.put(c, map.getOrDefault(c, 0) + 1);
             }
-            String key = new String(frequencyArr);
-            List<String> tempList = map.getOrDefault(key, new LinkedList<String>());
-            tempList.add(s);
-            map.put(key, tempList);
+            List<String> list = resultMap.getOrDefault(map, new ArrayList<String>());
+            list.add(i);
+            resultMap.put(map, list);
         }
-        return new LinkedList<>(map.values());
+        List<List<String>> result = new LinkedList<>();
+        for (Map.Entry<Map<Character, Integer>, List<String>> pair : resultMap.entrySet()) {
+            result.add(pair.getValue());
+        }
+        return result;
     }
 }
