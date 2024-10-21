@@ -3,28 +3,27 @@ import java.util.*;
 class Solution {
     public int evalRPN(String[] tokens) {
         Deque<Integer> stack = new ArrayDeque<>();
-        int one, two;
-        for (String s : tokens) {
-            switch (s) {
+        int op1, op2;
+        for (String i : tokens) {
+            switch (i) {
                 case "+":
                     stack.push(stack.pop() + stack.pop());
                     break;
                 case "-":
-                    one = stack.pop();
-                    two = stack.pop();
-                    stack.push(two - one);
+                    op2 = stack.pop();
+                    op1 = stack.pop();
+                    stack.push(op1 - op2);
                     break;
                 case "/":
-                    one = stack.pop();
-                    two = stack.pop();
-                    stack.push(two / one);
+                    op2 = stack.pop();
+                    op1 = stack.pop();
+                    stack.push(op1 / op2);
                     break;
                 case "*":
                     stack.push(stack.pop() * stack.pop());
                     break;
                 default:
-                    stack.push(Integer.parseInt(s));
-                    break;
+                    stack.push(Integer.parseInt(i));
             }
         }
         return stack.pop();

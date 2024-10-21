@@ -1,26 +1,32 @@
-import java.util.Stack;
+import java.util.*;
 
 class Solution {
     public boolean isValid(String s) {
-        Stack<Character> stack = new Stack<Character>();
-        for (char ch : s.toCharArray()) {
-            switch (ch) {
-                case '(', '{', '[' -> stack.push(ch);
-                case ')' -> {
+        Deque<Character> stack = new ArrayDeque<>();
+        for (char i : s.toCharArray()) {
+            switch (i) {
+                case '(':
+                case '[':
+                case '{':
+                    stack.push(i);
+                    break;
+                case ')':
                     if (stack.isEmpty() || stack.pop() != '(') {
                         return false;
                     }
-                }
-                case '}' -> {
-                    if (stack.isEmpty() || stack.pop() != '{') {
-                        return false;
-                    }
-                }
-                case ']' -> {
+                    break;
+                case ']':
                     if (stack.isEmpty() || stack.pop() != '[') {
                         return false;
                     }
-                }
+                    break;
+                case '}':
+                    if (stack.isEmpty() || stack.pop() != '{') {
+                        return false;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
         return stack.isEmpty();
