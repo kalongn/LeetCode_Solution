@@ -2,27 +2,21 @@ import java.util.*;
 
 class Solution {
     public int longestConsecutive(int[] nums) {
-        Set<Integer> numLine = new HashSet<>();
+        Set<Integer> set = new HashSet<>();
         for (int i : nums) {
-            numLine.add(i);
+            set.add(i);
         }
         int max = 0;
         for (int i : nums) {
-            numLine.add(i);
-            int winSize = 1;
-            int temp = i;
-            while (numLine.contains(temp - 1)) {
-                winSize++;
-                temp--;
-                numLine.remove(temp);
+            if (!set.contains(i - 1)) {
+                int currWinSize = 1;
+                while (set.contains(i + 1)) {
+                    set.remove(i + 1);
+                    currWinSize++;
+                    i++;
+                }
+                max = Math.max(max, currWinSize);
             }
-            temp = i;
-            while (numLine.contains(temp + 1)) {
-                winSize++;
-                temp++;
-                numLine.remove(temp);
-            }
-            max = Math.max(max, winSize);
         }
         return max;
     }
