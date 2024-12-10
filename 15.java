@@ -2,26 +2,27 @@ import java.util.*;
 
 class Solution {
     public List<List<Integer>> threeSum(int[] nums) {
-        Arrays.sort(nums);
         List<List<Integer>> result = new ArrayList<>();
-        for (int left = 0; left < nums.length - 2; left++) {
-            if (left > 0 && nums[left] == nums[left - 1]) {
+        Arrays.sort(nums);
+
+        for (int i = 0; i < nums.length; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
                 continue;
             }
-            int mid = left + 1;
-            int right = nums.length - 1;
-            while (mid < right) {
-                int sum = nums[left] + nums[mid] + nums[right];
-                if (sum == 0) {
-                    result.add(Arrays.asList(nums[left], nums[mid], nums[right]));
-                    mid++;
-                    while (nums[mid] == nums[mid - 1] && mid < right) {
-                        mid++;
-                    }
-                } else if (sum > 0) {
-                    right--;
+            int j = i + 1;
+            int k = nums.length - 1;
+            while (j < k) {
+                int total = nums[i] + nums[j] + nums[k];
+                if (total > 0) {
+                    k--;
+                } else if (total < 0) {
+                    j++;
                 } else {
-                    mid++;
+                    result.add(Arrays.asList(nums[i], nums[j], nums[k]));
+                    j++;
+                    while (j < k && nums[j] == nums[j - 1]) {
+                        j++;
+                    }
                 }
             }
         }
