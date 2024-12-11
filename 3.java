@@ -1,24 +1,19 @@
-import java.util.HashSet;
+import java.util.*;
 
 class Solution {
     public int lengthOfLongestSubstring(String s) {
-        if(s.length() == 0) {
+        if (s.length() == 0) {
             return 0;
         }
-        int max = 1;
-        for(int i = 0; i < s.length(); i++) {
-            HashSet<Character> letters = new HashSet<>();
-            letters.add(s.charAt(i));
-            for(int j = i + 1; j < s.length(); j++) {
-                if(letters.contains(s.charAt(j))) {
-                    break;
-                }
-                letters.add(s.charAt(j));
+        Map<Character, Integer> map = new HashMap<>();
+        int left = 0, result = 1;
+        for (int right = 0; right < s.length(); right++) {
+            if (map.containsKey(s.charAt(right))) {
+                left = Math.max(map.get(s.charAt(right)) + 1, left);
             }
-            if(max < letters.size()) {
-                max = letters.size();
-            }
+            map.put(s.charAt(right), right);
+            result = Math.max(result, right - left + 1);
         }
-        return max;
+        return result;
     }
 }

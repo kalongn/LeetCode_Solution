@@ -1,31 +1,41 @@
+import java.util.*;
+
 class Solution {
     public String minWindow(String s, String t) {
-        if (s == null || t == null || s.length() == 0 || t.length() == 0 ||
-                s.length() < t.length()) {
-            return new String();
+        int m = s.length(), n = t.length();
+        if (n > m) {
+            return "";
         }
-        int[] map = new int[128];
-        int count = t.length();
-        int start = 0, end = 0, minLen = Integer.MAX_VALUE, startIndex = 0;
-        for (char c : t.toCharArray()) {
-            map[c]++;
+        Map<Character, Integer> mapT = new HashMap<>();
+        for (char i : t.toCharArray()) {
+            mapT.put(i, mapT.getOrDefault(i, 0) + 1);
         }
-        char[] chS = s.toCharArray();
-        while (end < chS.length) {
-            if (map[chS[end++]]-- > 0) {
-                count--;
+
+        int have = 0, needed = mapT.size();
+        int maxLength = Integer.MAX_VALUE;
+        Map<Character, Integer> window = new HashMap<>();
+        int left = 0, bestLeft = 0;
+        for (int right = 0; right < m; right++) {
+            char currChar = s.charAt(right);
+            window.put(currChar, window.getOrDefault(currChar, 0) + 1);
+            if (mapT.containsKey(currChar) && mapT.get(currChar).equals(window.get(currChar))) {
+                have++;
             }
-            while (count == 0) {
-                if (end - start < minLen) {
-                    startIndex = start;
-                    minLen = end - start;
+
+            while (have == needed) {
+                if ((right - left) + 1 < maxLength) {
+                    maxLength = (right - left) + 1;
+                    bestLeft = left;
                 }
-                if (map[chS[start++]]++ == 0) {
-                    count++;
+                char leftChar = s.charAt(left);
+                window.put(leftChar, window.get(leftChar) - 1);
+                if (mapT.containsKey(leftChar) && window.get(leftChar) < mapT.get(leftChar)) {
+                    have--;
                 }
+                left++;
             }
         }
 
-        return minLen == Integer.MAX_VALUE ? new String() : new String(chS, startIndex, minLen);
+        return maxLength == Integer.MAX_VALUE ? "" : s.substring(bestLeft, bestLeft + maxLength);
     }
 }
