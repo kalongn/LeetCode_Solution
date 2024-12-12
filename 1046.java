@@ -1,14 +1,17 @@
-import java.util.PriorityQueue;
+import java.util.*;
 
 class Solution {
     public int lastStoneWeight(int[] stones) {
-        PriorityQueue<Integer> heap = new PriorityQueue<>((a, b) -> b - a);
-        for (int a : stones) {
-            heap.offer(a);
+        PriorityQueue<Integer> heap = new PriorityQueue<>((x, y) -> y - x);
+        for (int i : stones) {
+            heap.offer(i);
         }
         while (heap.size() > 1) {
-            heap.offer(heap.poll() - heap.poll());
+            int result = heap.poll() - heap.poll();
+            if (result != 0) {
+                heap.offer(result);
+            }
         }
-        return heap.poll();
+        return heap.size() == 0 ? 0 : heap.peek();
     }
 }

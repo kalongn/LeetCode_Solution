@@ -1,4 +1,5 @@
 import java.util.*;
+import javafx.util.Pair;
 
 class Solution {
     public int leastInterval(char[] tasks, int n) {
@@ -6,12 +7,29 @@ class Solution {
         for (char i : tasks) {
             freq[i - 'A']++;
         }
-        Arrays.sort(freq);
-        int max = freq[25] - 1;
-        int idle = max * n;
-        for (int i = 24; i >= 0 && freq[i] > 0; i--) {
-            idle -= Math.min(max, freq[i]);
+        PriorityQueue<Integer> heap = new PriorityQueue<>((x, y) -> y - x);
+        for (int i : freq) {
+            if (i > 0) {
+                heap.offer(i);
+            }
         }
-        return idle > 0 ? idle + tasks.length : tasks.length;
+        int time = 0;
+        Queue<Pair<Integer, Integer>> queue = new LinkedList<>();
+        while (!heap.isEmpty() || !queue.isEmpty()) {
+            time++;
+            if (heap.isEmpty()) {
+                time = queue.peek().getValue();
+            } else {
+                int jobLeft = heap.poll() - 1;
+                if (jobLeft > 0) {
+                    queue.offer(new Pair<Integer, Integer>(jobLeft, time + n));
+                }
+            }
+
+            if (!queue.isEmpty() && time == queue.peek().getValue()) {
+                heap.offer(queue.poll().getKey());
+            }
+        }
+        return time;
     }
 }
