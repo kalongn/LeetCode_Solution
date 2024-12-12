@@ -1,12 +1,11 @@
 class Solution {
     public Node copyRandomList(Node head) {
-        Node cursor = head, next;
+        Node cursor = head;
         while (cursor != null) {
-            next = cursor.next;
-            Node copy = new Node(cursor.val);
-            cursor.next = copy;
-            copy.next = next;
-            cursor = next;
+            Node newNode = new Node(cursor.val);
+            newNode.next = cursor.next;
+            cursor.next = newNode;
+            cursor = newNode.next;
         }
 
         cursor = head;
@@ -17,20 +16,15 @@ class Solution {
             cursor = cursor.next.next;
         }
 
+        Node dummyHead = new Node(0), dummyCursor = dummyHead;
         cursor = head;
-        Node dummyHead = new Node(0);
-        Node copy, copyCursor = dummyHead;
         while (cursor != null) {
-            next = cursor.next.next;
+            dummyCursor.next = cursor.next;
+            dummyCursor = dummyCursor.next;
 
-            copy = cursor.next;
-            copyCursor.next = copy;
-            copyCursor = copy;
-
-            cursor.next = next;
-            cursor = next;
+            cursor.next = cursor.next.next;
+            cursor = cursor.next;
         }
-
         return dummyHead.next;
     }
 }

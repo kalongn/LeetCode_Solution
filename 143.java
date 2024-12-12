@@ -1,31 +1,29 @@
 class Solution {
     public void reorderList(ListNode head) {
-        if (head == null || head.next == null) {
-            return;
+        ListNode slow = head, fast = head.next;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
         }
 
-        ListNode first = head, second = head;
-        while (second.next != null && second.next.next != null) {
-            first = first.next;
-            second = second.next.next;
-        }
-        ListNode preMiddle = first, preCurrent = first.next;
-        while (preCurrent.next != null) {
-            ListNode current = preCurrent.next;
-            preCurrent.next = current.next;
-            current.next = preMiddle.next;
-            preMiddle.next = current;
+        ListNode midHead = slow.next;
+        slow.next = null;
+        ListNode prev = null;
+        while (midHead != null) {
+            ListNode temp = midHead.next;
+            midHead.next = prev;
+            prev = midHead;
+            midHead = temp;
         }
 
-        first = head;
-        second = preMiddle.next;
-
-        while (first != preMiddle) {
-            preMiddle.next = second.next;
-            second.next = first.next;
-            first.next = second;
-            first = second.next;
-            second = preMiddle.next;
+        fast = head;
+        slow = prev;
+        while (slow != null) {
+            ListNode temp1 = fast.next, temp2 = slow.next;
+            fast.next = slow;
+            slow.next = temp1;
+            fast = temp1;
+            slow = temp2;
         }
     }
 }
