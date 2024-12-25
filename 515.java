@@ -7,22 +7,21 @@ class Solution {
             return result;
         }
         Queue<TreeNode> queue = new LinkedList<>();
-        queue.offer(root);
+        queue.add(root);
         while (!queue.isEmpty()) {
-            int currentLength = queue.size();
-            int max = Integer.MIN_VALUE;
-            for (int i = 0; i < currentLength; i++) {
-                TreeNode node = queue.remove();
-                max = Math.max(max, node.val);
-
-                if (node.left != null) {
-                    queue.offer(node.left);
+            int length = queue.size();
+            int rowMax = Integer.MIN_VALUE;
+            for (int i = 0; i < length; i++) {
+                TreeNode pulled = queue.poll();
+                rowMax = Math.max(rowMax, pulled.val);
+                if (pulled.left != null) {
+                    queue.add(pulled.left);
                 }
-                if (node.right != null) {
-                    queue.offer(node.right);
+                if (pulled.right != null) {
+                    queue.add(pulled.right);
                 }
             }
-            result.add(max);
+            result.add(rowMax);
         }
         return result;
     }
