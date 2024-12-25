@@ -43,7 +43,7 @@ class Solution {
         List<List<Integer>> adjList,
         int node,
         int parent
-    ) {a
+    ) {
         int maxDepth1 = 0, maxDepth2 = 0; // Tracks the two largest depths from the current node
         int diameter = 0; // Tracks the diameter of the subtree
 
