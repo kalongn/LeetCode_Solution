@@ -1,24 +1,35 @@
-class Solution {
-    public int countGoodStrings(int low, int high, int zero, int one) {
-        int[] dp = new int[high + 1]; // make dp 1 indexed
-        dp[0] = 1;
-        int mod = 1_000_000_007;
+import java.util.*;
 
-        for (int i = 1; i <= high; i++) {
-            if (i >= zero) {
-                dp[i] += dp[i - zero];
-            }
-            if (i >= one) {
-                dp[i] += dp[i - one];
-            }
-            dp[i] %= mod;
-        }
+class Solution {
+
+    final int MOD = 1_000_000_007;
+    int[] dp;
+
+    public int countGoodStrings(int low, int high, int zero, int one) {
+        dp = new int[high + 1];
+        Arrays.fill(dp, -1);
+        dp[0] = 1;
 
         int result = 0;
         for (int i = low; i <= high; i++) {
-            result += dp[i];
-            result %= mod;
+            result += helper(i, zero, one);
+            result %= MOD;
         }
         return result;
+    }
+
+    private int helper(int end, int zero, int one) {
+        if (dp[end] != -1) {
+            return dp[end];
+        }
+        int sum = 0;
+        if (end >= zero) {
+            sum += helper(end - zero, zero, one);
+        }
+        if (end >= one) {
+            sum += helper(end - one, zero, one);
+        }
+        dp[end] = sum % MOD;
+        return dp[end];
     }
 }
