@@ -1,38 +1,47 @@
 class Solution {
     public int mincostTickets(int[] days, int[] costs) {
-        int[] dp = new int[days.length];
-        return minCostTickets(days, costs, 0, dp);
+        int lastDay = days[days.length - 1];
+        int[] dp = new int[lastDay + 1];
+
+        int i = 0;
+        for (int day = 1; day <= lastDay; day++) {
+            if (day < days[i]) {
+                dp[day] = dp[day - 1];
+            } else {
+                i++;
+                dp[day] = Math.min(dp[day - 1] + costs[0],
+                        Math.min(dp[Math.max(0, day - 7)] + costs[1],
+                                dp[Math.max(0, day - 30)] + costs[2]));
+            }
+        }
+
+        return dp[lastDay];
+
+        // Arrays.fill(dp, -1);
+        // return helper(days, costs, 0, dp);
     }
 
-    public static int minCostTickets(int[] days, int[] costs, int day, int[] dp) {
-        if (day >= days.length)
+    private int helper(int[] days, int[] costs, int index, int[] dp) {
+        if (index == days.length) {
             return 0;
-        // return previously calculated day
-        if (dp[day] != 0)
-            return dp[day];
-        int i;
-
-        // Attempt to buy a one-day ticket
-        int buyOneDay = minCostTickets(days, costs, day + 1, dp) + costs[0];
-
-        // Attempt to buy a seven-day ticket and skip all days that will be included in
-        // this ticket
-        for (i = day; i < days.length; i++)
-            if (days[i] >= days[day] + 7)
-                break;
-        int buySevenDays = minCostTickets(days, costs, i, dp) + costs[1];
-
-        // Attempt to buy a thirty-day ticket and skip all days that will be included in
-        // this ticket
-        for (i = day; i < days.length; i++)
-            if (days[i] >= days[day] + 30)
-                break;
-        int buyThirtyDays = minCostTickets(days, costs, i, dp) + costs[2];
-
-        // return minimum of three options
-        int result = Math.min(Math.min(buyOneDay, buySevenDays), buyThirtyDays);
-        dp[day] = result;
-        return result;
-
+        }
+        if (dp[index] != -1) {
+            return dp[index];
+        }
+        int currentDay = days[index];
+        int oneIndex = index + 1;
+        int sevenIndex = oneIndex;
+        while (sevenIndex < days.length && days[sevenIndex] < currentDay + 7) {
+            sevenIndex++;
+        }
+        int thirtyIndex = sevenIndex;
+        while (thirtyIndex < days.length && days[thirtyIndex] < currentDay + 30) {
+            thirtyIndex++;
+        }
+        int oneCost = costs[0] + helper(days, costs, oneIndex, dp);
+        int sevenCost = costs[1] + helper(days, costs, sevenIndex, dp);
+        int thirtyCost = costs[2] + helper(days, costs, thirtyIndex, dp);
+        dp[index] = Math.min(oneCost, Math.min(sevenCost, thirtyCost));
+        return dp[index];
     }
 }
