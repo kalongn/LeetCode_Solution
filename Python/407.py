@@ -1,88 +1,61 @@
-import heapq
+from heapq import heappop, heappush
+from typing import List
 
 
 class Solution:
-    # Class to store the height and coordinates of a cell in the grid
     class Cell:
         def __init__(self, height, row, col):
             self.height = height
             self.row = row
             self.col = col
 
-        # Comparison method for the priority queue (min-heap)
         def __lt__(self, other):
             return self.height < other.height
 
-    # Helper function to check if a cell is valid (within grid bounds)
-    def _is_valid_cell(self, row, col, num_of_rows, num_of_cols):
-        return 0 <= row < num_of_rows and 0 <= col < num_of_cols
+    def _is_valid_cell(self, row, col, n, m):
+        return 0 <= row < n and 0 <= col < m
 
-    def trapRainWater(self, height_map):
-        # Direction arrays
-        d_row = [0, 0, -1, 1]
-        d_col = [-1, 1, 0, 0]
+    def trapRainWater(self, heightMap: List[List[int]]) -> int:
+        direction = [(0, -1), (0, 1), (-1, 0), (1, 0)]
+        n, m = len(heightMap), len(heightMap[0])
 
-        num_of_rows = len(height_map)
-        num_of_cols = len(height_map[0])
-
-        visited = [[False] * num_of_cols for _ in range(num_of_rows)]
-
-        # Priority queue (min-heap) to process boundary cells in increasing height order
+        visited = [[False] * m for _ in range(n)]
         boundary = []
 
-        # Add the first and last column cells to the boundary and mark them as visited
-        for i in range(num_of_rows):
-            heapq.heappush(boundary, self.Cell(height_map[i][0], i, 0))
-            heapq.heappush(
-                boundary,
-                self.Cell(height_map[i][num_of_cols - 1], i, num_of_cols - 1),
-            )
-            visited[i][0] = visited[i][num_of_cols - 1] = True
+        for i in range(n):
+            heappush(boundary, self.Cell(heightMap[i][0], i, 0))
+            heappush(boundary, self.Cell(heightMap[i][m - 1], i, m - 1))
+            visited[i][0] = visited[i][m - 1] = True
 
-        # Add the first and last row cells to the boundary and mark them as visited
-        for i in range(num_of_cols):
-            heapq.heappush(boundary, self.Cell(height_map[0][i], 0, i))
-            heapq.heappush(
-                boundary,
-                self.Cell(height_map[num_of_rows - 1][i], num_of_rows - 1, i),
-            )
-            visited[0][i] = visited[num_of_rows - 1][i] = True
+        for i in range(m):
+            heappush(boundary, self.Cell(heightMap[0][i], 0, i))
+            heappush(boundary, self.Cell(heightMap[n - 1][i], n - 1, i))
+            visited[0][i] = visited[n - 1][i] = True
 
-        # Initialize the total water volume to 0
-        total_water_volume = 0
+        total_water = 0
 
-        # Process cells in the boundary (min-heap will always pop the smallest height)
         while boundary:
-            # Pop the cell with the smallest height from the boundary
-            current_cell = heapq.heappop(boundary)
+            current_cell = heappop(boundary)
 
-            current_row = current_cell.row
-            current_col = current_cell.col
+            cur_row = current_cell.row
+            cur_col = current_cell.col
+
             min_boundary_height = current_cell.height
 
-            # Explore all 4 neighboring cells
-            for direction in range(4):
-                # Calculate the row and column of the neighbor
-                neighbor_row = current_row + d_row[direction]
-                neighbor_col = current_col + d_col[direction]
+            for dx, dy in direction:
+                neighbor_row = cur_row + dx
+                neighbor_col = cur_col + dy
 
-                # Check if the neighbor is within the grid bounds and not yet visited
                 if (
-                    self._is_valid_cell(
-                        neighbor_row, neighbor_col, num_of_rows, num_of_cols
-                    )
+                    self._is_valid_cell(neighbor_row, neighbor_col, n, m)
                     and not visited[neighbor_row][neighbor_col]
                 ):
-                    # Get the height of the neighbor cell
-                    neighbor_height = height_map[neighbor_row][neighbor_col]
+                    neighbor_height = heightMap[neighbor_row][neighbor_col]
 
-                    # If the neighbor's height is less than the current boundary height, water can be trapped
                     if neighbor_height < min_boundary_height:
-                        # Add the trapped water volume
-                        total_water_volume += min_boundary_height - neighbor_height
+                        total_water += min_boundary_height - neighbor_height
 
-                    # Push the neighbor into the boundary with updated height (to prevent water leakage)
-                    heapq.heappush(
+                    heappush(
                         boundary,
                         self.Cell(
                             max(neighbor_height, min_boundary_height),
@@ -90,7 +63,7 @@ class Solution:
                             neighbor_col,
                         ),
                     )
+
                     visited[neighbor_row][neighbor_col] = True
 
-        # Return the total amount of trapped water
-        return total_water_volume
+        return total_water
